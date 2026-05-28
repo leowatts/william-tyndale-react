@@ -3,8 +3,11 @@ import {
   useConversationControls,
   useConversationMode,
   useConversationStatus,
+  type ConversationStatus,
 } from "@elevenlabs/react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import video from "./assets/Tyndale Speaking Video.mp4"
+import "./App.css"
 
 function App() {
   return (
@@ -12,6 +15,21 @@ function App() {
       <Agent />
     </ConversationProvider>
   );
+}
+
+function getText(status: ConversationStatus): string {
+  if (status === "disconnected") {
+    return "Press the button to speak with William Tyndale";
+  }
+  if (status === "connecting") {
+    return "Calling William Tyndale. Please wait...";
+  }
+  if (status === "error") {
+    return "An error has occured. Reloading the page with F5 may fix this.";
+  }
+  if (status === "connected") {
+    return "You can press the button to end the conversation at any time.";
+  }
 }
 
 function Agent() {
@@ -27,24 +45,26 @@ function Agent() {
     document.addEventListener("click", listener)
     return () => { document.removeEventListener("click", listener) }
   }, [status, startSession, endSession])
-
-  if (status === "disconnected") {
-    return <h1>Press the button to speak with William Tyndale</h1>;
-  }
-  if (status === "connecting") {
-    return <h1>Loading...</h1>;
-  }
-  if (status === "error") {
-    return <h1>An error has occured. Reloading the page with F5 may fix this.</h1>;
-  }
-  if (status === "connected") {
-    if (mode === "speaking") {
-      return <h1>Speaking. You can press the button to end the conversation at any time.</h1>
-    } else {
-      return <h1>Listening. You can press the button to end the conversation at any time.</h1>
+  const videoRef = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    if (videoRef.current) {
+      if (status === "connected" && mode === "speaking") {
+        videoRef.current?.play();
+      } else {
+        videoRef.current.currentTime = 0;
+        videoRef.current.pause();
+      }
     }
+  }, [videoRef, mode, status])
 
-  }
+  const screenText = getText(status);
+
+  return <>
+    <h1>{screenText}</h1>
+    <video src={video} ref={videoRef} style={{ width: "100%" }}></video>
+  </>
+
+
 }
 
 export default App;
