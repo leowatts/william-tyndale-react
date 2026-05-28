@@ -30,6 +30,7 @@ function getText(status: ConversationStatus): string {
   if (status === "connected") {
     return "You can press the button to end the conversation at any time.";
   }
+  return "";
 }
 
 function Agent() {
