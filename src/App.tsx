@@ -28,7 +28,7 @@ function getText(status: ConversationStatus): string {
     return "An error has occured. Reloading the page with F5 may fix this.";
   }
   if (status === "connected") {
-    return "You can press the button to end the conversation at any time.";
+    return "Connected to William! You can press the button to end the conversation at any time.";
   }
   return "";
 }
